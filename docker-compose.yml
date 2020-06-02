@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  mysql_basket:
+    image: mysql:5.7
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root3004917779
+      MYSQL_USER: yurijmo
+      MYSQL_PASSWORD: 3004917779
+      MYSQL_DATABASE: db_basket
+    networks:
+      - backend
+    container_name: mysql_basket
+  phpmyadmin_basket:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_basket
+    ports:
+      - 2324:80
+    links:
+      - mysql_basket:db
+    networks:
+      - backend
+networks:
+  frontend:
+  backend:
+volumes:
+  data:
