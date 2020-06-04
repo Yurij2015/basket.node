@@ -1,42 +1,79 @@
+const mysql = require("mysql2");
 const express = require("express");
 const bodyParser = require("body-parser");
-const app = express();
-// // создаем парсер для данных application/x-www-form-urlencoded
-// const urlencodedParser = bodyParser.urlencoded({extended: false});
-//
-// app.get("/register", urlencodedParser, function (request, response) {
-//     response.sendFile(__dirname + "/register.html");
-// });
-//
-// app.get("/css/owl.carousel.css", urlencodedParser, function (request, response) {
-//     response.sendFile(__dirname + "/css/owl.carousel.css");
-// });
-//
-// app.get("/css/bootstrap-3.1.1.min.css", urlencodedParser, function (request, response) {
-//     response.sendFile(__dirname + "/css/bootstrap-3.1.1.min.css");
-// });
-//
-// app.get("/css/style.css", urlencodedParser, function (request, response) {
-//     response.sendFile(__dirname + "/css/style.css");
-// });
-//
-// app.get("/about", urlencodedParser, function (request, response) {
-//     response.sendFile(__dirname + "/about.html");
-// });
-//
-// app.post("/register", urlencodedParser, function (request, response) {
-//     if (!request.body) return response.sendStatus(400);
-//     console.log(request.body);
-//     response.send(`${request.body.userName} - ${request.body.userAge}`);
-// });
-//
-// // app.use(function (request, response) {
-// //     response.sendFile(__dirname+"/index.html");
-// // });
 
-// app.use("/", function(request, response){
-//     response.send("<h1>Главная страница</h1>");
-// });
+const app = express();
+const urlencodedParser = bodyParser.urlencoded({extended: false});
+
+const pool = mysql.createPool({
+    connectionLimit: 5,
+    host: "localhost",
+    user: "root",
+    database: "db_basket",
+    password: "root3004917779"
+});
+
+app.set("view engine", "hbs");
+
+// получение списка записей
+app.get("/admin", function (req, res) {
+    pool.query("SELECT * FROM pages", function (err, data) {
+        if (err) return console.log(err);
+        res.render("index.hbs", {
+            pages: data
+        });
+    });
+});
+// возвращаем форму для добавления данных
+app.get("/create", function (req, res) {
+    res.render("create.hbs");
+});
+// получаем отправленные данные и добавляем их в БД
+app.post("/create", urlencodedParser, function (req, res) {
+
+    if (!req.body) return res.sendStatus(400);
+    const menu_name = req.body.menu_name;
+    const content = req.body.content;
+    pool.query("INSERT INTO pages (menu_name, content) VALUES (?,?)", [menu_name, content], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/admin");
+    });
+});
+
+// получем id редактируемого пользователя, получаем его из бд и отправлям с формой редактирования
+app.get("/edit/:id", function (req, res) {
+    const id = req.params.id;
+    pool.query("SELECT * FROM pages WHERE id=?", [id], function (err, data) {
+        if (err) return console.log(err);
+        res.render("edit.hbs", {
+            pages: data[0]
+        });
+    });
+});
+// получаем отредактированные данные и отправляем их в БД
+app.post("/edit", urlencodedParser, function (req, res) {
+
+    if (!req.body) return res.sendStatus(400);
+    const menu_name = req.body.menu_name;
+    const content = req.body.content;
+    const id = req.body.id;
+
+    pool.query("UPDATE pages SET menu_name=?, content=? WHERE id=?", [menu_name, content, id], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/admin");
+    });
+});
+
+// получаем id удаляемого пользователя и удаляем его из бд
+app.post("/delete/:id", function (req, res) {
+
+    const id = req.params.id;
+    pool.query("DELETE FROM pages WHERE id=?", [id], function (err, data) {
+        if (err) return console.log(err);
+        res.redirect("/admin");
+    });
+});
+
 
 app.use(express.static(__dirname + "/"))
 app.use(express.static(__dirname + "/css"))
@@ -44,4 +81,6 @@ app.use(express.static(__dirname + "/images"))
 app.use(express.static(__dirname + "/js"))
 app.use(express.static(__dirname + "/admin"))
 
-app.listen(3000);
+app.listen(3000, function () {
+    console.log("Сервер ожидает подключения...");
+});
