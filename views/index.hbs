@@ -30,8 +30,8 @@
 <div class="container">
     <div class="col-md-12">
         <h1> Административная панель </h1>
-        <p><a href="/create">Добавить запись</a></p>
-        <table>
+        <a href="/create" class="btn btn-danger" style="margin-bottom: 15px;">Добавить запись</a>
+        <table class="table table-hover">
             <tr>
                 <th>Название статьи</th>
                 <th>Содержание</th>
@@ -40,11 +40,11 @@
             {{#each pages}}
                 <tr>
                     <td>{{this.menu_name}}</td>
-                    <td>{{this.content}}</td>
+                    <td>{{{this.content}}}</td>
                     <td>
-                        <a href="/edit/{{this.id}}">Edit</a>|
+                        <a href="/edit/{{this.id}}" class="btn btn-sm btn-info">Edit</a>|
                         <form action="delete/{{this.id}}" method="POST" style="display:inline;">
-                            <input type="submit" value="Delete"/>
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete"/>
                         </form>
                     </td>
                 </tr>

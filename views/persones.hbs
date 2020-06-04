@@ -50,7 +50,7 @@
                 <div class="collapse navbar-collapse pull-right" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li><a href="about.html">О сайте</a></li>
-                        <li><a href="persones.html">Личности</a></li>
+                        <li><a href="persones">Личности</a></li>
                         <li><a href="gallery.html">Галерея</a></li>
                         <li><a href="contact.html">Контакты</a></li>
                     </ul>
@@ -77,8 +77,8 @@
                     <div class="blog-grid">
 
                         {{#each pages}}
-                            <h3>{{this.menu_name}}</h3>
-                            <div>{{this.content}}</div>
+                            <h3 style="margin: 20px;">{{this.menu_name}}</h3>
+                            <div>{{{this.content}}}</div>
                         {{/each}}
 
 
