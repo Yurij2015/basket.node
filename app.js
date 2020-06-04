@@ -24,6 +24,17 @@ app.get("/admin", function (req, res) {
         });
     });
 });
+
+// получение списка записей
+app.get("/persones", function (req, res) {
+    pool.query("SELECT * FROM pages", function (err, data) {
+        if (err) return console.log(err);
+        res.render("persones.hbs", {
+            pages: data
+        });
+    });
+});
+
 // возвращаем форму для добавления данных
 app.get("/create", function (req, res) {
     res.render("create.hbs");
